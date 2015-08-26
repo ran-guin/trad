@@ -11,7 +11,7 @@ block content
           span.icon-bar
           span.icon-bar
         // This is the brand on the left-hand side.
-        a.navbar-brand(href='/#')  activityOverlord
+        a.navbar-brand(href='/#')  TRAD 
         .collapse.navbar-collapse(ng-class="!navCollapsed && 'in'")
           form.navbar-form.navbar-right(ng-submit='submitLoginForm()')
             .form-group
@@ -24,8 +24,12 @@ block content
               span(ng-show='loginForm.loading') Signing in...
             input(type='hidden', name='_csrf', value='#{ _csrf %>')
     .col-md-8.col-md-offset-2
-      .jumbotron
-        h1 activityOverlordv2.0
-        h2 ...tracking app activity better than the NSA since 1899.
+      if message
+        .alert.alert-danger #{message}
+      if ! message
+        .alert.alert-danger no message
+      .jumbotron(style='padding:50px')
+        h1 TRAD 
+        h2 Template for Rapid Application Development (Prototype)  
         a.btn.btn-lg.btn-success(href='/signup') Sign up now!
 
