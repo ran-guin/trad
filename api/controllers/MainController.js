@@ -24,10 +24,10 @@ module.exports = {
 
       if (!user) {
         sails.log.verbose('Session refers to a user who no longer exists- did you delete a user, then try to refresh the main home with an open tab logged-in as that user?');
-        return res.view('homepage');
+        return res.view('/signup');
       }
 
-      return res.view('homepage', {
+      return res.view('/user/dashboard/' + user.id, {
         me: {
           id: user.id,
           name: user.name,
