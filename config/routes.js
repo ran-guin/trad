@@ -54,10 +54,22 @@ module.exports.routes = {
 
   // Default User pages 
   'GET /user/dashboard/:id': 'UserController.dashboard',
+  'GET /user/:id': 'UserController.dashboard',
 
-  '/': { view: 'public' },
-  '/homepage': { view: 'homepage' },
+  'GET /api': 'QueryController.staff',
+  'GET /api/q': 'QueryController.query',
+  'POST /api/search': 'QueryController.search',
 
+  'GET /': { view: 'public' },
+  'GET /homepage': { view: 'homepage' },
+
+  /* Generic Record control options */
+  'GET /record/add/:table': 'RecordController.new',
+  'POST /record/add/:table': 'RecordController.add',
+  'GET /record/edit/:table': 'RecordController.edit',
+  'POST /record/edit/:table': 'RecordController.update',
+
+  'GET /lookup/:table' : 'RecordController.lookup',
 
   /***************************************************************************
   *                                                                          *
@@ -68,5 +80,4 @@ module.exports.routes = {
   * for configuration options and examples.                                  *
   *                                                                          *
   ***************************************************************************/
-
 };
