@@ -1,0 +1,1 @@
+./../../../../lib/bootstrap/ui-bootstrap-tpls.js
