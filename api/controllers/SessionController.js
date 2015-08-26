@@ -14,7 +14,7 @@ module.exports = {
         },
 
         create: function(req, res, next) {
-        console.log('Initializing Session...');
+                console.log('Initializing Session...');
                 // Check for email and password in params sent via the form, if none
                 // redirect the browser back to the sign-in form.
                 if (!req.param('email') || !req.param('password')) {
@@ -43,7 +43,8 @@ module.exports = {
 
                         // If no user is found...
                         if (!user) {
-                console.log("User not found...");
+                            
+                                console.log("User not found...");
                                 var noAccountError = [{
                                         name: 'noAccount',
                                         message: 'The email address ' + req.param('email') + ' not found.'
@@ -77,8 +78,20 @@ module.exports = {
 
                                 // Log user in
                                 req.session.authenticated = true;
-                                req.session.User = user;
+                                req.session.me = {
+                                    name: user.name,
+                                    email: user.email,
+                                    lastLogin: user.lastLoggedIn
+                                };
 
+                                console.log("Set Session Parameters from Session Controller");
+                                req.session.params = {
+                                    me : req.session.me,
+                                    defaultPage : 'user/User',
+                                    
+                                    Config : {user: user.name, userid: user.id, url: "http://limsdev06.bcgsc.ca:1337", me : req.session.me } 
+                                }; 
+    
                                 // Change status to online
                                 user.online = true;
                                 user.save(function(err, user) {
@@ -92,15 +105,17 @@ module.exports = {
                                                 action: ' has logged in.'
                                         });
 
+
                                         // If the user is also an admin redirect to the user list (e.g. /views/user/index.jade)
                                         // This is used in conjunction with config/policies.js file
-                                        if (req.session.User.admin) {
-                                                res.redirect('/user');
-                                                return;
+                                        if (req.session.me.access && req.session.me.access.match('Admin')) {
+                                            res.redirect('/user');
+                                            return;
                                         }
 
                                         //Redirect to their profile page (e.g. /views/user/show.jade)
                                         res.redirect('/user/dashboard/' + user.id);
+                                        return;
                                 });
                         });
                 });
