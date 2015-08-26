@@ -1,0 +1,10 @@
+extends layout
+block content
+        .container(style='margin-top:100px')
+            div(ng-app="myApp")
+                    div(ng-controller="UserController")
+
+                        h3 Title: {{ title }}
+
+    footer
+      include footer.jade
