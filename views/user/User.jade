@@ -1,0 +1,40 @@
+extends ./../layout
+block content
+ div(style="margin-top:50px") 
+  div.alert.alert-info Home Page #{JSON.stringify(me)} #{JSON.stringify(Config)}
+
+  .container
+    div(ng-app="myApp")
+      if (recordId) 
+        - Config['recordId'] = recordId
+      else
+        - recordId = Config['recordId']
+
+      - var url = Config['url']
+      - var init = "initialize(" + JSON.stringify(Config) + ")";
+
+      div(ng-controller="Nto1Controller")
+       div(ng-controller="UserController" ng-init="#{init}")
+
+        div#topMessage
+
+        <!-- Nav tabs -->
+        ul.nav.nav-tabs(role="tablist")
+          li(role="presentation")
+            a(href="#home" aria-controls="home" role="tab" data-toggle="tab") Home
+
+
+        <!-- Tab panes -->
+        div.tab-content
+          div.tab-pane#home(role="tabpanel")
+            p &nbsp;
+            h3 Profile:
+            table.table
+              each val,attr in me
+                tr
+                  td #{attr}
+                  td #{val}
+
+          div.tab-pane#work(role="tabpanel")
+            p &nbsp;
+            b ... Work Statistics ... 
