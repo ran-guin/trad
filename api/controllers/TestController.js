@@ -11,11 +11,11 @@ module.exports = {
    */
 
   test: function (req, res) {
-    var option = req.param('option');
+    var option = req.param('option') || 'Test';
     console.log('Option: ' + option);
     
     res.render(option);
-  }
+  },
 	
 };
 
