@@ -11,10 +11,21 @@ module.exports = {
    * match a real user in the database, sign in to Activity Overlord.
    */
 
+
   dashboard: function (req, res) {
-    var id = req.param('id');
-    console.log(id + ' is me: ' + JSON.stringify(req.session.me) + req.session.authenticated);
-    res.send('dashboard');
+    var id = req.param('id')
+    
+    console.log('sess: ' + JSON.stringify(req.session));
+    console.log('params : ' + JSON.stringify(req.session.params));
+
+    if (req.session && req.session.params) {
+      var page = req.session.params.defaultPage || 'homepage';
+      res.render('user/User', req.session.params );
+    }
+    else {
+      console.log("No user defined ... default to public homepage");
+      res.render('public', {message: "No user defined ... default to public homepage"});
+    }
   },
 
   login: function (req, res) {
@@ -49,6 +60,7 @@ module.exports = {
 
           // Store user id in the user session
           //req.session.me = user.id;
+          console.log('logged in successfully');
 
           // All done- let the client know that everything worked.
           return res.ok();
