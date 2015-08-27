@@ -1,0 +1,41 @@
+div
+  div
+    - var preload = "loadStaff()";
+    form#assignStaffForm(name='assignStaffForm' ng-init='#{preload}')
+        table.table.table-bordered.table-hover
+          thead
+            tr.active
+              th &nbsp;
+              th Staff
+              th Position
+              th Status
+              th Assigned
+            tr(ng-repeat='emp in clinic.staff' ng-if="emp.role != 'Desk Staff'")
+              td
+                  //div(ng-if="emp.role != 'Desk Staff' ")
+                  span(ng-if="emp.assigned && emp.assigned == emp.id")
+                    button.btn.btn-danger.btn-xs(type='button' ng-click="assignStaff($index, emp.id)") de-assign 
+                  span(ng-if= "!emp.assigned && emp.status == 'On Duty'")
+                    button.btn.btn-success.btn-xs(type='button' ng-click="assignStaff($index, emp.id)") assign
+              td 
+                    b {{ emp.name }} [ {{ emp.id }} ]
+              td 
+                    b {{ emp.role }}
+              td
+                    span(ng-if="emp.assigned && emp.assigned != emp.id")
+                      button.btn.btn-danger.btn-xs(type='button' )
+                        b Busy
+                    span(ng-if="!emp.assigned && emp.status == 'On Duty'")
+                      button.btn.ptn-success.btn-xs(type='button')
+                        b Available
+                    span(ng-if="emp.status == 'Off Duty'")
+                      button.btn.ptn-success.btn-xs(type='button')
+                        b Off Duty
+                    span(ng-if="emp.assigned && emp.assigned == emp.id")
+                      button.btn.btn-warning.btn-xs(type='button' ng-if="emp.assigned == emp.id")
+                        b Assigned         
+              td
+                  b {{emp.assigned}}
+        p
+  hr
+  

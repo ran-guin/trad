@@ -1,0 +1,165 @@
+extends ./../layout
+block content
+ div(style="margin-top:50px") 
+  div.alert.alert-info Clinic Home Page #{JSON.stringify(me)} #{JSON.stringify(Config)}
+
+  .container(style='width:90%')
+    div(ng-app="myApp")
+      if (recordId) 
+        - Config['recordId'] = recordId
+      else
+        - recordId = Config['recordId']
+
+      - var url = Config['url']
+      - var init = "initialize(" + JSON.stringify(Config) + ")";
+
+      div(ng-controller="Nto1Controller")
+       div(ng-controller="ClinicController" ng-init="#{init}" ngcloak)
+
+        div#topMessage
+
+        form#Queue(ng-submit="queue()")
+          table.table(width='100%')
+            tr
+              td.col-md-4
+                table
+                  tr
+                    td(colspan=2) 
+                      b {{ timestamp }}
+                  tr
+                    td(align='right') Logged in as: 
+                      b {{ user }}
+                      hr
+                  tr 
+                    td 
+                      u Clinic: &nbsp;
+                  tr 
+                    td
+                      b {{ clinic.name }} [ {{ clinic.id }} ]
+                  tr 
+                    td {{ clinic.address }}
+              td.col-md-4(align='right')
+                div(ng-if="clinic.staff.length")
+                  table.table
+                    caption
+                      b Current Staff: &nbsp; 
+                      button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#manageStaffModal') Manage Clinic Staff
+                    tr.active
+                      th Name
+                      th Role
+                      th Status
+                      th Edit
+                      //div(ng-repeat='emp in clinic.staff')
+                        - var dutyClass = "active.active-success";
+
+                    tr.active(ng-if="emp.status != 'On Duty'" ng-repeat='emp in clinic.staff')
+                        td {{emp.name}}
+                        td {{emp.role}}
+                        td {{ emp.status }} &nbsp;
+                        td
+                            button.btn.btn-success.btn-xs(type='button' ng-click="changeDuty($index,'On Duty')") Place On Duty
+
+                    tr.success(ng-if="emp.status == 'On Duty'" ng-repeat='emp in clinic.staff')
+                        td 
+                          b {{emp.name}}
+                        td 
+                          b {{emp.role}}
+                        td 
+                          b {{ emp.status }} &nbsp;
+                        td
+                          button.btn.btn-danger.btn-xs(type='button' ng-click="changeDuty($index,'Off Duty')") Take Off duty
+   
+                div(ng-if="! clinic.staff.length")
+                  button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#manageStaffModal') Manage Clinic Staff
+                  b &nbsp; ( {{clinic.staff.length}} staff currently assigned)
+
+          hr
+          h3 Queue:
+          div(ng-if="items.length")
+            table.table
+              tr
+                td &nbsp;
+                td Position
+                td Last Name
+                td First Name
+                td Birthdate
+                td Notes
+                td Reason for Visit
+                td Vaccinator
+                td Wait Time
+                td Room          
+                td Session          
+                td Status
+              tr(ng-repeat="q in items")
+                td
+                  button.btn.btn-danger.btn-xs(type='button' value="Delete" ng-click="deleteItem($index)") X
+                  span &nbsp;
+                  button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#editItemModal') Edit            
+                td {{ q.position }}
+                td {{ q.lastName }} : {{ q.id }} 
+                td {{ q.firstName }}
+                td {{ q.birthdate }} {{ q.identifier }}
+                td {{ q.notes }}
+                td 
+                  //- span(ng-if="!q.Visit_Reason")
+                  //-   - var preload = "loadLookup('/api/lookup/Visit_Reason', 'Visit_Reason', 'Visit_Reason')";
+                  //-   div(ng-dropdown-multiselect="" ng-required=1 options="Lookup.Visit_Reason.options" selected-model="Visit_Reasons" ng-click="syncLookup('Visit_Reasons','Visit_Reason_ID','Visit_Reason')" extra-settings="MenuSettings" ng-init="#{preload}")              
+                  //- span(ng-if="q.Visit_Reason")
+                    b {{q.Visit_Reason}}                
+                td 
+                  span(ng-if="q.Vaccinator")
+                    b {{ q.Vaccinator }}
+                  span(ng-if="!q.Vaccinator")
+                    button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' ng-click="focusPatient(q.id)" data-target='#assignStaffModal') Assign 
+                td {{ q.Wait_Time }}
+                td {{ q.Site_Name }}
+                td {{ q.treatment_id }}
+                td {{ q.Queued_Status }}
+          div(ng-if="! items.length")
+            b (Nothing currently in the queue)
+        
+        include ./../Nto1/smartSearch.jade
+
+        div#message
+        if (!id) 
+         div.modal.fade#newPatientModal
+          div.modal-dialog
+            div.modal-content
+              div.modal-header
+                button.close(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden="true") &times;
+                h4.modal-title Add New Patient
+              div.modal-body
+                include newPatient.jade
+                hr
+                div#insideModal
+              div.modal-footer
+                button.btn.btn-default(type="button button-danger" data-dismiss="modal") Close
+
+         div.modal.fade#manageStaffModal
+          div.modal-dialog
+            div.modal-content
+              div.modal-header
+                button.close(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden="true") &times;
+                h4.modal-title Manage Current Staff
+              div.modal-body
+                include manageStaff.jade
+                hr
+                div#insideModal
+              div.modal-footer
+                button.btn.btn-default(type="button button-danger" data-dismiss="modal") Close
+
+        div.modal.fade#assignStaffModal
+          div.modal-dialog
+            div.modal-content
+              div.modal-header
+                button.close(type="button" class="close" data-dismiss="modal" aria-label="Close")
+                  span(aria-hidden="true") &times;
+                h4.modal-title Assign Current Staff to Patient(s)
+              div.modal-body
+                include assignStaff.jade
+                hr
+                div#insideModal
+              div.modal-footer
+                button.btn.btn-default(type="button button-danger" data-dismiss="modal") Close

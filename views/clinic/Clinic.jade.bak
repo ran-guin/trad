@@ -1,8 +1,7 @@
-doctype html
-html
-  include header.jade
+extends ./../layout
+block content
   
-  body(ng-app='DashboardModule', ng-controller='DashboardController', ng-cloak='')
+  div(ng-app='DashboardModule', ng-controller='DashboardController', ng-cloak='')
     // container = Fixed-width container container-fluid = full-width
     .container-fluid
       // Creates the navbar
@@ -31,7 +30,7 @@ html
               Using ng-show instead of ng-if because we need this mark-up to be in the dom when signup controller
               fires.  If it's not there (which it wouldn't be in the case of ng-if) then the scope of the signup
               controller will not be tied to this element.
-      h1 This is the Dashboard
+      h1 This is the main Clinic page...  
       h1  
       hr
       h3  Contact: #{ me.email }
@@ -40,5 +39,3 @@ html
       span _csrf: #{ _csrf }
       span  me: !{ JSON.stringify(me) }
       
-      include footer.jade
-

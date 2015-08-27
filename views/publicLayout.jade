@@ -10,13 +10,13 @@ html
             span.icon-bar
             span.icon-bar
             span.icon-bar
-          a.navbar-brand(href='/')  Template for Rapid Application Development (Prototype) 
+          a.navbar-brand(href='/')  OVID - Online Vaccine & Immunization Database (Prototype) 
         .navbar-collapse.collapse
           ul.nav.navbar-nav
             if session.authenticated
               li.active
                 a(href='/user/show/<%= session.User.id %>')
-            if (session.authenticated && session.me && session.me.access && session.me.access.match('Admin') )
+            if (session.authenticated && session.User.admin)
               li
                 a(href='/user') User Administration
               li
