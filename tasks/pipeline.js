@@ -51,6 +51,16 @@ var jsFilesToInject = [
   
   'js/app.js',
   
+  'js/public/signup/SignupModule.js',
+  'js/public/homepage/HomepageModule.js',
+  'js/private/dashboard/DashboardModule.js',
+  'js/private/Nto1/Nto1Module.js',
+  'js/private/clinic/ClinicModule.js',
+  'js/private/test/TestModule.js',
+  
+  'js/private/dashboard/DashboardFactory.js',
+  'js/private/Nto1/Nto1Factory.js',
+  
   'js/**/*.js'
 ];
 
