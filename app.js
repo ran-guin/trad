@@ -23,6 +23,9 @@
 process.chdir(__dirname);
 
 // Ensure a "sails" can be located:
+
+// Default 
+
 (function() {
   var sails;
   try {
