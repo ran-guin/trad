@@ -59,6 +59,7 @@ npm install jade --save
 
 * add some standard responses (eg emailAddressInUse, forbidden...) */
 
+/* Customization: */
 * ADD abc Module(s) as required **/
 ** add routes
 ** add views/abc/ views
