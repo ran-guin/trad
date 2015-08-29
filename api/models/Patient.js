@@ -32,6 +32,10 @@ module.exports = {
     	enum: ['M','F']
     },
 
+    region_id: {
+        model: 'region',
+    },
+
     notes: {
     	type: 'string'
     },
