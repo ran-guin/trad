@@ -5,19 +5,9 @@ block content
 
   .container(style='width:90%')
     div(ng-app="myApp")
-      if (recordId) 
-        - Config['recordId'] = recordId
-      else
-        - recordId = Config['recordId']
-
-      - var url = Config['url']
-      - var init = "initialize(" + JSON.stringify(Config) + ")";
-
-      //
-        h5 me: #{JSON.stringify(me)}
-        h5 user: #{JSON.stringify(Config['user'])}
-        h5 clinic: #{JSON.stringify(Config['clinic'])}
-        h5 patient: #{JSON.stringify(Config['patient'])}
+      - var url = url
+      - var config = {User: User, clinic: clinic, patient: patient};
+      - var init = "initialize(" + JSON.stringify(config) + ")";
 
       div(ng-controller="Nto1Controller")
        div(ng-controller="VisitController" ng-init="#{init}" ngcloak)
@@ -34,7 +24,7 @@ block content
                       b {{ timestamp}}
                   tr
                     td 
-                      b(data-toggle="tooltip" title="Currently logged in user") Clinician: {{ user }}
+                      b(data-toggle="tooltip" title="Currently logged in user") Clinician: {{ user.name }}
                   tr
                     td 
                       hr
@@ -44,34 +34,35 @@ block content
                   tr 
                     td {{ clinic.address }}
               td.col-md-4(align='center')
-                table
-                  tr
-                    td
-                      b Patient
-                    td
-                      b {{ patient.name }} [ {{ patient.gender }} - {{ patient.age }} yrs ]
-                  tr
-                    td
-                      b Birthdate: 
-                    td 
-                      b {{ patient.birthdate }}
-                  tr
-                    td 
-                      hr
-                  tr
-                    td &nbsp;
-                  tr
-                    td
-                      a.btn.btn-warning.btn-xs(
-                        tabindex="0"
-                        data-trigger='focus' 
-                        data-toggle="popover"
-                        data-html="true"
-                        data-placement="left"
-                        ng-click="loadPatientHistory()"
-                        data-title="Patient History" 
-                        data-content="Dynamically load detailed Patient Vaccination History 1...."
-                        ) View Patient History
+                 div(ng-if="patient.id")
+                  table
+                    tr
+                      td
+                        b Patient
+                      td
+                        b {{ patient.name }} [ {{ patient.age }} yr old {{ patient.gender }} ]
+                    tr
+                      td
+                        b Birthdate: 
+                      td 
+                        b {{ patient.birthdate }}
+                    tr
+                      td 
+                        hr
+                    tr
+                      td &nbsp;
+                    tr
+                      td
+                        a.btn.btn-warning.btn-xs(
+                          tabindex="0"
+                          data-trigger='focus' 
+                          data-toggle="popover"
+                          data-html="true"
+                          data-placement="left"
+                          ng-click="loadPatientHistory()"
+                          data-title="Patient History" 
+                          data-content="Dynamically load detailed Patient Vaccination History 1...."
+                          ) View Patient History
               td.col-md-4(align='right')
                 div(ng-if="patient.id")
                   table.table(ng-init="loadTravel()")
@@ -111,9 +102,9 @@ block content
                       td 
                         u 
                           b Queued Patients
-                    tr(ng-repeat="visit in queued")
+                    tr(ng-repeat="qp in queued")
                       td
-                        a.btn.btn-primary(href="/visit/home/{{visit.id}}", ng-click="loadPatient(patient.id)") {{visit.patient}} [ {{ visit.age }}]
+                        a.btn.btn-primary(href="/visit/home/{{qp.visit_id}}", ng-click="loadPatient(qp.id)") {{qp.name}} [ {{ qp.age }} yr old {{ qp.gender }}]
        
           hr(style='border-width:thick; border-color:black;')
        
@@ -173,6 +164,7 @@ block content
             div.input-group
               span.input-group-addon 
                 //button.btn.btn-xs.btn-danger#hideSS(onclick="document.getElementById('smartScan').style.display='none'; document.getElementById('showScan').style.display='block';") x
+                i.fa.fa-barcode
                 span &nbsp;
                 button.btn.btn-primary.btn-xs(type='button' ng-click="addBarcodedVaccine()") Add Vaccine(s) &nbsp;
               
