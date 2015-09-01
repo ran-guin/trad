@@ -25,7 +25,9 @@ block content
             input(type='hidden', name='_csrf', value='#{ _csrf %>')
     .col-md-8.col-md-offset-2
       if message
-        .alert.alert-danger #{message}
+        .alert.alert-danger 
+          i.fa.fa-warning 
+          b &nbsp; #{message}
       if ! message
         .alert.alert-danger no message
       .jumbotron(style='padding:50px')
