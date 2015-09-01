@@ -16,7 +16,7 @@ html
             if session.authenticated
               li.active
                 a(href='/user/show/<%= session.User.id %>')
-            if (session.authenticated && session.User.admin)
+            if (session.authenticated && session.User.access && session.User.access == 'Admin')
               li
                 a(href='/user') User Administration
               li
