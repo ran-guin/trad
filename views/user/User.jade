@@ -1,65 +1,69 @@
 extends ./../layout
 block content
  div(style="margin-top:50px") 
-  div.alert.alert-info Home Page #{JSON.stringify(me)} #{JSON.stringify(Config)}
+  div.alert.alert-info Home Page
 
   .container
     div(ng-app="myApp")
-      if (recordId) 
-        - Config['recordId'] = recordId
-      else
-        - recordId = Config['recordId']
 
-      - var url = Config['url']
-      - var init = "initialize(" + JSON.stringify(Config) + ")";
+      - var url = session.url
+      - var config = {User: User, clinic: clinic, patient: patient};
+      - var init = "initialize(" + JSON.stringify(config) + ")";
 
       div(ng-controller="Nto1Controller")
        div(ng-controller="UserController" ng-init="#{init}")
 
         div#topMessage
 
-        <!-- Nav tabs -->
-        ul.nav.nav-tabs(role="tablist")
-          li(role="presentation")
-            a(href="#home" aria-controls="home" role="tab" data-toggle="tab") Home
-          li.active(role="presentation")
-            a(href="#clinics" aria-controls="clinics" role="tab" data-toggle="tab") Clinics
-          li(role="presentation")
-            a(href="#work" aria-controls="work" role="tab" data-toggle="tab") Work Stats
+        if User
+          <!-- Nav tabs -->
+          ul.nav.nav-tabs(role="tablist")
+            li(role="presentation")
+              a(href="#home" aria-controls="home" role="tab" data-toggle="tab") Home
+            li.active(role="presentation")
+              a(href="#clinics" aria-controls="clinics" role="tab" data-toggle="tab") Clinics
+            li(role="presentation")
+              a(href="#work" aria-controls="work" role="tab" data-toggle="tab") Work Stats
+
+          <!-- Tab panes -->
+          div.tab-content
+            div.tab-pane#home(role="tabpanel")
+              p &nbsp;
+              h3 Profile:
+              table.table
+                each val,attr in User
+                  tr
+                    td #{attr}
+                    td #{val}
+
+            h3 Lookup:
+            - var preload = "loadLookup('" + url + "/lookup/clinic', 'clinic', 'Clinics')"; 
+            div(ng-dropdown-multiselect="" options="Lookup.Clinics.options" selected-model="Clinics", extra-settings="MenuSettings" ng-init="#{preload}")
+            b options = {{ Lookup.Clinics.options }}
+            hr
+
+            div.tab-pane.active#clinics(role="tabpanel")
+              p &nbsp;
+              h3 My Clinics:
+              // temporary 
+              table.table
+                tr(ng-repeat = "clinic in Clinics")
+                  td 
+                    b {{ clinic.name }}
+                  td 
+                    a(href="/clinic/home/{{clinic.id}}")
+                      b Queue
+                  td 
+                    a(href="/visit/home")
+                      b Treatment Page
+   
+            div.tab-pane#work(role="tabpanel")
+              p &nbsp;
+              b ... Work Statistics ...
+
+        if ! User
+          h3 no User defined... 
+
+          div.alert.alert-danger #{JSON.stringify(User)}
 
 
-        <!-- Tab panes -->
-        div.tab-content
-          div.tab-pane#home(role="tabpanel")
-            p &nbsp;
-            h3 Profile:
-            table.table
-              each val,attr in me
-                tr
-                  td #{attr}
-                  td #{val}
-
-          h3 Lookup:
-          - var preload = "loadLookup('" + url + "/lookup/clinic', 'clinic', 'Clinics')"; 
-          div(ng-dropdown-multiselect="" options="Lookup.Clinics.options" selected-model="Clinics", extra-settings="MenuSettings" ng-init="#{preload}")
-          b options = {{ Lookup.Clinics.options }}
-          hr
-
-          div.tab-pane.active#clinics(role="tabpanel")
-            p &nbsp;
-            h3 My Clinics:
-            // temporary 
-            table.table
-              tr(ng-repeat = "clinic in Clinics")
-                td 
-                  b {{ clinic.name }}
-                td 
-                  a(href="/clinic/home/{{clinic.id}}")
-                    b Queue
-                td 
-                  a(href="/visit/home")
-                    b Treatment Page
- 
-          div.tab-pane#work(role="tabpanel")
-            p &nbsp;
-            b ... Work Statistics ... 
