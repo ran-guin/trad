@@ -149,15 +149,18 @@ $scope.$parent.MenuSettings = {
     $scope.initialize = function( config ) {
 
         console.log("local init: " + config);
-        
-        if (config && config['me']) { 
+        if (config && config['User']) { 
             console.log("loaded user attributes");
-            $scope.me = config['me'];
+            $scope.user = config['User'];
         }
         if (config && config['clinic']) { 
             console.log("loaded clinic attributes");
             $scope.clinic = config['clinic'];
         }
+        if (config && config['patient']) { 
+            console.log("loaded patient attributes");
+            $scope.patient = config['patient'];
+        }       
 
         $scope.$parent.highlightBackground = "background-color:#9C9;";
         var highlight_element = document.getElementById('clinicTab');

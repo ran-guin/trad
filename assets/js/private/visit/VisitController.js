@@ -112,9 +112,9 @@ $scope.$parent.MenuSettings = {
 
         console.log("local init: " + JSON.stringify(config));
         
-        if (config && config['me']) { 
+        if (config && config['User']) { 
             console.log("loaded user attributes");
-            $scope.me = config['me'];
+            $scope.user = config['User'];
         }
         if (config && config['clinic']) { 
             console.log("loaded clinic attributes");
@@ -184,22 +184,31 @@ $scope.$parent.MenuSettings = {
         $scope.loadExamples(['scanned','scanned'],[null,null], ['Recommended','Mandatory for Region'],1);
  
     }
+    $scope.loadPatient = function (id) {
+        $scope.patient = {};
+        $scope.patient.id = id;
+    }
 
+// move to ClinicController only ... 
     $scope.loadQueue = function () {
         console.log("LOAD QUEUE");
         var queueExample = [
             {
-                id: 1,
-                patient: 'Ryan Reynolds',
+                visit_id: 1,
+                name: 'Ryan Reynolds',
                 age: 55,
+                gender: 'M'
             },
             {
-                id: 2,
-                patient: 'Brenda Reynolds',
+                visit_id: 2,
+                name: 'Brenda Reynolds',
                 age: 35,
+                gender: 'F'
             },            
 
         ];
+
+//        $http.get(url + '/clinic/queue')
 
         $scope.queued = queueExample;
     }
