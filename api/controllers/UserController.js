@@ -18,7 +18,7 @@ module.exports = {
     console.log('sess: ' + JSON.stringify(req.session));
     console.log('params : ' + JSON.stringify(req.session.params));
 
-    if (req.session && req.session.params) {
+    if (req.session && req.session.params  && req.session.params) {
       var page = req.session.params.defaultPage || 'homepage';
       res.render('user/User', req.session.params );
     }
@@ -59,7 +59,7 @@ module.exports = {
         success: function (){
 
           // Store user id in the user session
-          //req.session.me = user.id;
+          //req.session.User = user.id;
           console.log('logged in successfully');
 
           // All done- let the client know that everything worked.
@@ -126,8 +126,8 @@ module.exports = {
               }
 
               // Log user in
-              req.session.me = newUser.id;
-           
+              req.session.User = newUser.id;
+              
               var payload = { id: newUser.id, access: 'New User' };
               var token = null;
 
@@ -160,8 +160,8 @@ module.exports = {
   logout: function (req, res) {
 
     // Look up the user record from the database which is
-    // referenced by the id in the user session (req.session.me)
-    User.findOne(req.session.me, function foundUser(err, user) {
+    // referenced by the id in the user session (req.session.User)
+    User.findOne(req.session.User, function foundUser(err, user) {
       if (err) return res.negotiate(err);
 
       // If session refers to a user who no longer exists, still allow logout.
@@ -171,7 +171,7 @@ module.exports = {
       }
 
       // Wipe out the session (log out)
-      req.session.me = null;
+      req.session.User = null;
 
       // Either send a 200 OK or redirect to the home page
       return res.backToHomePage();

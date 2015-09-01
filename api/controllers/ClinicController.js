@@ -13,47 +13,25 @@ module.exports = {
 	    if (req.session && req.session.params) {
 	      var page = req.session.params.defaultPage || 'homepage';
 
-	      req.session.params['item_Class'] = 'queue';
-	      req.session.params['search_title'] = "Search for Patients using any of fields below";
-	      req.session.params['add_to_scope'] = true;
+	      req.session.params['page'] = {};
+	      req.session.params['page']['item_Class'] = 'patient';
+	      req.session.params['page']['search_title'] = "Search for Patients using any of fields below";
+	      req.session.params['page']['add_to_scope'] = true;
 
+	      Clinic.load({'clinic_id' : id}, function (err, result) {	        
+	        if (err) {  return res.negotiate(err) }
 
-			var query = "SELECT clinic.name as clinic, clinic.id, clinic.address, user.name as user, clinic_staff, staff.role from (clinic) LEFT JOIN clinic_staff__staff_clinics AS CS ON CS.staff_clinics=clinic.id LEFT JOIN staff ON CS.clinic_staff=staff.id LEFT JOIN user on staff.user_id=user.id";
-			if (id) { query += " WHERE clinic.id =" + id }
+	        if (!result) {
+	          console.log('no results');
+	          return res.send('');
+	        }
+	    	
+	    	console.log("RESULT:" + JSON.stringify(result));
 
-			console.log("Q: " + query);
-			Visit.query(query, function (err, result) {
-				if (err) {
-					return res.negotiate(err);
-		 		}
+	    	req.session.params['clinic'] = result['clinic'];
 
-				if (!result) {
-					console.log('no results');
-					return res.send('');
-				}
-
-				console.log("CLINICS: " + JSON.stringify(result));
-
-				var clinicStaff = [];
-				for (var i=0; i<result.length; i++) {
-					var staffInfo = {
-						'id' : result[i]['clinic_staff'],
-						'name' : result[i]['user'],
-						'role' : result[i]['role'],
-						'status' : result[i]['dutyStatus'],
-					}
-				}
-
-				/** load clinic info **/
-				req.session.params['Config']['clinic'] = {
-					id: result[0]['id'],
-					name: result[0]['clinic'],
-					staff: clinicStaff	
-				};
-
-				res.render('clinic/Clinic', req.session.params );
-			});
-
+	        res.render('clinic/Clinic', req.session.params);
+	      });
 	    }
 	    else {
 	      console.log("No user defined ... default to public homepage");
@@ -64,23 +42,7 @@ module.exports = {
 
 	/* separate load function only required when model loading requires information from multiple tables */
 	load: function (req, res) {
-		var id = req.param('id') || 0;
 
-		var query = "SELECT * from clinic where clinic_id = id";
-		console.log("Q: " + query);
-		Clinic.query(query, function (err, result) {
-			if (err) {
-				return res.negotiate(err);
-     		}
-
-			if (!result) {
-				console.log('no results');
-				return res.send('');
-			}
-
-			return res.send(result);
-	
-		});
 	},
 
 	/* separate list function only required when query uses or retrieves information from multiple tables */

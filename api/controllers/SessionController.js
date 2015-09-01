@@ -77,20 +77,21 @@ module.exports = {
                                 }
 
                                 // Log user in
+                                
+
                                 req.session.authenticated = true;
-                                req.session.me = {
-                                    name: user.name,
-                                    email: user.email,
-                                    lastLogin: user.lastLoggedIn
-                                };
+ //                               req.session.Session.User = user;
+
+//                               req.session.User.encryptedPassword = null;   // track all attributes EXCEPT password... 
+                                var Session = { 
+                                    User : user,
+                                    defaultPage: 'user/User',
+                                    url:  "http://limsdev06.bcgsc.ca:1337",
+                                }
 
                                 console.log("Set Session Parameters from Session Controller");
-                                req.session.params = {
-                                    me : req.session.me,
-                                    defaultPage : 'user/User',
-                                    
-                                    Config : {user: user.name, userid: user.id, url: "http://limsdev06.bcgsc.ca:1337", me : req.session.me } 
-                                }; 
+                                req.session.User = user;
+                                req.session.params = Session; 
     
                                 // Change status to online
                                 user.online = true;
@@ -108,7 +109,7 @@ module.exports = {
 
                                         // If the user is also an admin redirect to the user list (e.g. /views/user/index.jade)
                                         // This is used in conjunction with config/policies.js file
-                                        if (req.session.me.access && req.session.me.access.match('Admin')) {
+                                        if (user.access && user.access.match('Admin')) {
                                             res.redirect('/user');
                                             return;
                                         }

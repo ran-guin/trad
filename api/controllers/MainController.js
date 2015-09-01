@@ -10,14 +10,14 @@ module.exports = {
    showMainPage: function (req, res) {
 
     // If not logged in, show the public view.
-    if (!req.session.me) {
+    if (!req.session.User) {
       console.log('public home page');
       return res.view('public');
     }
 
     // Otherwise, look up the logged-in user and show the logged-in view,
     // bootstrapping basic user data in the HTML sent from the server
-    User.findOne(req.session.me, function (err, user){
+    User.findOne(req.session.User, function (err, user) {
       if (err) {
         return res.negotiate(err);
       }
@@ -27,18 +27,15 @@ module.exports = {
         return res.view('/signup');
       }
 
-      return res.view('/user/dashboard/' + user.id, {
-        me: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          title: user.title,
-          isAdmin: !!user.admin,
-          gravatarUrl: user.gravatarUrl
-        },
+      user.encryptedPassword = null; // do not track password within user object
+
+      var Session = {
+        user : user,
         _csrf: req.session.token,
-        flash: req.session.flash,
-      });
+        flash: req.session.flash
+      };
+
+      return res.view('/user/dashboard/' + user.id, Session );
 
     });
   },

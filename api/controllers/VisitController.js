@@ -14,84 +14,27 @@ module.exports = {
 	      var page = req.session.params.defaultPage || 'homepage';
 
           console.log("Tweak Session Parameters from VisitController");
+          req.session.params['page'] = {};
+	      req.session.params['page']['item_Class'] = 'vaccine';
+	      req.session.params['page']['search_title'] = "Search for Standard Vaccines using any of fields below";
+	      req.session.params['page']['add_to_scope'] = true;
 
-	      req.session.params['item_Class'] = 'vaccine';
-	      req.session.params['search_title'] = "Search for Standard Vaccines using any of fields below";
-	      req.session.params['add_to_scope'] = true;
- 
-	      /* temporarily hardcode for example... retrieve clinic data from api ... */
+	      Clinic.load({'visit_id' : id}, function (err, result) {	        
+	        if (err) {  return res.negotiate(err) }
 
-	      	var fields = ['clinic.name as clinic', 'clinic_id', 'clinic.address', 'user.name as user', 'clinic_staff', 'staff.role'];
-	      	var tables = "clinic";
-	      	var left_joins = [
-	      		"visit ON visit.clinic_id=clinic.id",
-	      		"clinic_staff__staff_clinics AS CS ON CS.staff_clinics=clinic.id",
-	      		"staff ON CS.clinic_staff=staff.id",
-	      		"user on staff.user_id=user.id"
-	      	];
+	        if (!result) {
+	          console.log('no results');
+	          return res.send('');
+	        }
+	    	
+	    	console.log("RESULT:" + JSON.stringify(result));
 
-			var conditions = [];
+	    	req.session.params['clinic'] = result['clinic'];
+	    	if (result['patient']) { req.session.params['patient'] = result['patient'] }
 
-			if (id) { 
-				conditions.push("visit.id =" + id);
-//				left_joins.push("patient on visit.patient_id=patient.id");
-				fields.push('patient.firstName', 'patient.lastName', 'patient.gender', "DATE_FORMAT(patient.birthdate,'%b %d, %Y') as birthdate", 'visit.patient_id', "FLOOR(DATEDIFF(CURDATE(), birthdate)/365) as age", "region.name as location");
-				tables += ",patient, region";
-				conditions.push("patient.id = visit.patient_id");
-				conditions.push("patient.region_id=region.id");
-			}
+	        res.render('visit/Visit', req.session.params);
+	      });
 
-			var query = "SELECT " + fields.join(',');
-			if (tables) query += ' FROM (' + tables + ')';
-			if (left_joins.length) { query += " LEFT JOIN " + left_joins.join(' LEFT JOIN ') }
-			if (conditions.length) { query += " WHERE " + conditions.join(' AND ') }
-			console.log("Q: " + query);
-
-			Visit.query(query, function (err, result) {
-				if (err) {
-					return res.negotiate(err);
-		 		}
-
-				if (!result) {
-					console.log('no results');
-					return res.send('');
-				}
-
-				console.log("Query Results: " + JSON.stringify(result));
-
-				var clinicStaff = [];
-				for (var i=0; i<result.length; i++) {
-					var staffInfo = {
-						'id' : result[i]['clinic_staff'],
-						'name' : result[i]['user'],
-						'role' : result[i]['role'],
-						'status' : result[i]['dutyStatus'],
-						'address' : result[i]['address'],
-					}
-				}
-
-				/** load clinic info **/ 
-				req.session.params['Config']['clinic'] = {
-					id: result[0]['clinic_id'],
-					name: result[0]['clinic'],
-					address: result[0]['address'],
-					staff: clinicStaff,	
-				};
-
-				req.session.params['Config']['patient'] = {
-					id: result[0]['patient_id'],
-					firstName: result[0]['firstName'],
-					lastName: result[0]['lastName'],
-					name: result[0]['firstName'] + ' ' + result[0]['lastName'],
-					gender: result[0]['gender'],
-					birthdate: result[0]['birthdate'],
-					age: result[0]['age'],
-					location: result[0]['location'],
-				}
-
-
-				res.render('visit/Visit', req.session.params );
-			});
 	    }
 	    else {
 	      console.log("No user defined ... default to public homepage");
