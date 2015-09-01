@@ -1,17 +1,14 @@
 extends ./../layout
 block content
  div(style="margin-top:50px") 
-  div.alert.alert-info Clinic Home Page #{JSON.stringify(me)} #{JSON.stringify(Config)}
+  div.alert.alert-info Clinic Home Page 
+  - var debugMode = 1
 
   .container(style='width:90%')
     div(ng-app="myApp")
-      if (recordId) 
-        - Config['recordId'] = recordId
-      else
-        - recordId = Config['recordId']
 
-      - var url = Config['url']
-      - var init = "initialize(" + JSON.stringify(Config) + ")";
+      - var config = {User: User, clinic: clinic, patient: patient};
+      - var init = "initialize(" + JSON.stringify(config) + ")";
 
       div(ng-controller="Nto1Controller")
        div(ng-controller="ClinicController" ng-init="#{init}" ngcloak)
@@ -27,23 +24,27 @@ block content
                     td(colspan=2) 
                       b {{ timestamp }}
                   tr
-                    td(align='right') Logged in as: 
-                      b {{ user }}
-                      hr
-                  tr 
+                    td 
+                      b(data-toggle="tooltip" title="Currently logged in user") Logged in: {{ user.name }}
+                  tr
+                    td 
+                      hr            
+                  tr
                     td 
                       u Clinic: &nbsp;
                   tr 
                     td
                       b {{ clinic.name }} [ {{ clinic.id }} ]
-                  tr 
+                  tr
                     td {{ clinic.address }}
+
               td.col-md-4(align='right')
                 div(ng-if="clinic.staff.length")
                   table.table
-                    caption
-                      b Current Staff: &nbsp; 
-                      button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#manageStaffModal') Manage Clinic Staff
+                    tr
+                      td 
+                        b Current Staff: &nbsp; 
+                        button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#manageStaffModal') Manage
                     tr.active
                       th Name
                       th Role
@@ -71,7 +72,8 @@ block content
    
                 div(ng-if="! clinic.staff.length")
                   button.btn.btn-warning.btn-xs(type='button' data-toggle='modal' data-target='#manageStaffModal') Manage Clinic Staff
-                  b &nbsp; ( {{clinic.staff.length}} staff currently assigned)
+                  div 
+                    b &nbsp; ( {{clinic.staff.length}} staff currently assigned to this clinic)
 
           hr
           h3 Queue:
@@ -84,7 +86,6 @@ block content
                 td First Name
                 td Birthdate
                 td Notes
-                td Reason for Visit
                 td Vaccinator
                 td Wait Time
                 td Room          
@@ -99,13 +100,7 @@ block content
                 td {{ q.lastName }} : {{ q.id }} 
                 td {{ q.firstName }}
                 td {{ q.birthdate }} {{ q.identifier }}
-                td {{ q.notes }}
-                td 
-                  //- span(ng-if="!q.Visit_Reason")
-                  //-   - var preload = "loadLookup('/api/lookup/Visit_Reason', 'Visit_Reason', 'Visit_Reason')";
-                  //-   div(ng-dropdown-multiselect="" ng-required=1 options="Lookup.Visit_Reason.options" selected-model="Visit_Reasons" ng-click="syncLookup('Visit_Reasons','Visit_Reason_ID','Visit_Reason')" extra-settings="MenuSettings" ng-init="#{preload}")              
-                  //- span(ng-if="q.Visit_Reason")
-                    b {{q.Visit_Reason}}                
+                td {{ q.notes }}             
                 td 
                   span(ng-if="q.Vaccinator")
                     b {{ q.Vaccinator }}
