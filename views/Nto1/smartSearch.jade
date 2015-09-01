@@ -1,27 +1,30 @@
-- var v0 = 'block';
-- var v1 = 'none';
-if recordId
-  - v0 = 'none';
-  - v1 = 'block';
-- var iClass = item_Class || 'Item';
+- var v0 = 'none';
+- var v1 = 'block';
+if openSearch
+  - v0 = 'block';
+  - v1 = 'none';
+- var iClass = 'Item';
+if page && page.item_Class
+  - iClass = page.item_Class
 
-button#showSS(style='display:#{v1}' onclick="document.getElementById('smartSearch').style.display='block'; document.getElementById('showSS').style.display='none';") search / add items...
+div#showSS(style='display:#{v1}')
+  hr(style='border-width:thick; border-color:black;')
+  i.fa.fa-search
+  span &nbsp;
+  button.btn.btn-primary.btn-xs(onclick="document.getElementById('smartSearch').style.display='block'; document.getElementById('showSS').style.display='none';") search / add #{iClass}(s) 
 div#smartSearch(style='display:#{v0}')
   hr(style='border-width:thick; border-color:black;')
   div#insideSS(style='padding:10px') 
     button#hideSS(onclick="document.getElementById('smartSearch').style.display='none'; document.getElementById('showSS').style.display='block';") x
 
     form#addItemForm()
-          h4 #{search_title}
+          h4 #{page.search_title}
           div#addMessage
-          
-          each value, key in Config
-              input(type='hidden' id='#{key}' value='#{value}')
 
           table.table.table-bordered.table-hover
             thead
               tr.active.alert-success
-                if (add_to_scope)
+                if (page.add_to_scope)
                   th &nbsp;
 
                 th(ng-repeat="col in SearchOn")
@@ -30,7 +33,7 @@ div#smartSearch(style='display:#{v0}')
                   div(ng-if="!col.label")
                     span {{col.field}}
               tr#inputRow
-                if (add_to_scope) 
+                if (page.add_to_scope) 
                   td 
                     button.btn.btn-success(ng-click="addItem()") Add
                 td(ng-repeat="col in SearchOn")
@@ -77,9 +80,6 @@ div#smartSearch(style='display:#{v0}')
         span &nbsp;
         a(href="#")
           button.btn.btn-danger(type='button', ng-click="toggleDebugMode()") Debug Mode
-        span &nbsp;
-        a(href="#")
-          button.btn.btn-danger(type='button', ng-click="loadRecord(recordId)") Reload Record
         span &nbsp;
         a(href="#")
           button.btn.btn-danger(type='button', ng-click="clearScope()") Clear
