@@ -65,6 +65,84 @@ module.exports = {
         collection: 'staff',
         via: 'clinics'
     }
+  },
+
+  load: function (input, cb) {
+          var fields = ['clinic.name as clinic', 'clinic_id', 'clinic.address', 'user.name as user', 'clinic_staff', 'staff.role', 'visit.id as visit_id'];
+          var tables = "clinic";
+          var left_joins = [
+            "visit ON visit.clinic_id=clinic.id",
+            "clinic_staff__staff_clinics AS CS ON CS.staff_clinics=clinic.id",
+            "staff ON CS.clinic_staff=staff.id",
+            "user on staff.user_id=user.id"
+          ];
+
+      var conditions = [];
+
+      if ( input['clinic_id'] ) { conditions.push("clinic.id = " + input['clinic_id']) }
+
+     if (input['visit_id']) { 
+        conditions.push("visit.id =" + input['visit_id']);
+//        left_joins.push("patient on visit.patient_id=patient.id");
+        fields.push('patient.firstName', 'patient.lastName', 'patient.gender', "DATE_FORMAT(patient.birthdate,'%b %d, %Y') as birthdate", 'visit.patient_id', "FLOOR(DATEDIFF(CURDATE(), birthdate)/365) as age", "region.name as location");
+        tables += ",patient, region";
+        conditions.push("patient.id = visit.patient_id");
+        conditions.push("patient.region_id=region.id");
+      }
+ 
+      var query = "SELECT " + fields.join(',');
+      if (tables) query += ' FROM (' + tables + ')';
+      if (left_joins.length) { query += " LEFT JOIN " + left_joins.join(' LEFT JOIN ') }
+      if (conditions.length) { query += " WHERE " + conditions.join(' AND ') }
+      console.log("Q: " + query);
+
+
+    console.log("Clinic Query: " + query);
+    
+    Visit.query(query, function (err, result) {
+        if (err) { cb(err) }
+
+        console.log("CLINIC INFO: " + JSON.stringify(result));
+
+        var clinicStaff = [];
+        for (var i=0; i<result.length; i++) {
+          var staffInfo = {
+            'id' : result[i]['clinic_staff'],
+            'name' : result[i]['user'],
+            'role' : result[i]['role'],
+            'status' : result[i]['dutyStatus'],
+          }
+          clinicStaff.push(staffInfo);
+        }
+
+        var info = {};
+        /** load clinic info **/
+
+        /** load clinic info **/ 
+        info['clinic'] = {
+          id: result[0]['clinic_id'],
+          name: result[0]['clinic'],
+          address: result[0]['address'],
+          staff: clinicStaff, 
+        };
+
+        if (result[0]['patient_id']) {
+          info['patient'] = {
+            id: result[0]['patient_id'],
+            firstName: result[0]['firstName'],
+            lastName: result[0]['lastName'],
+            name: result[0]['firstName'] + ' ' + result[0]['lastName'],
+            gender: result[0]['gender'],
+            birthdate: result[0]['birthdate'],
+            age: result[0]['age'],
+            location: result[0]['location'],
+            visit_id: result[0]['visit_id'],
+          }
+        }
+        
+        cb(null, info);
+    });     
+
   }
 
 };
