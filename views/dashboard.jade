@@ -34,11 +34,11 @@ html
       h1 This is the Dashboard
       h1  
       hr
-      h3  Contact: #{ me.email }
-      button.btn.btn-primary(href="/user/edit/#{ me.id }") Edit
+      h3  Contact: #{ User.email }
+      button.btn.btn-primary(href="/user/edit/#{ User.id }") Edit
       hr
       span _csrf: #{ _csrf }
-      span  me: !{ JSON.stringify(me) }
+      span  User: !{ JSON.stringify(User) }
       
       include footer.jade
 
