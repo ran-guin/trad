@@ -15,8 +15,8 @@ html
           ul.nav.navbar-nav
             if session.authenticated
               li.active
-                a(href='/user/show/<%= session.me.id %>')
-            if (session.authenticated && session.me.admin)
+                a(href='/user/show/<%= session.User.id %>')
+            if (session.authenticated && session.User && session.User.access && session.User.access == 'Admin')
               li
                 a(href='/user') User Administration
               li
@@ -40,3 +40,18 @@ html
 
     footer
       include footer.jade
+
+    if debugMode
+      hr(style='border-width:thick; border-color:black;')
+      .container(style='width:90%')
+        h3 Development Feedback (for Debugging purposes only) :
+
+        if User
+          div.alert.alert-warning User: #{JSON.stringify(User)}
+        if clinic
+          div.alert.alert-danger Clinic: #{JSON.stringify(clinic)}
+        if patient 
+          div.alert.alert-danger Patient: #{JSON.stringify(patient)}
+       if Config 
+          div.alert.alert-danger Config: #{JSON.stringify(Config)}
+
