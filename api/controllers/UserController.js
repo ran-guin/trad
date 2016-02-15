@@ -22,6 +22,10 @@ module.exports = {
       var page = req.session.params.defaultPage || 'homepage';
       res.render('user/User', req.session.params );
     }
+    else if (req.payload && req.payload.user) {
+        var user_id = req.payload.user;
+        res.render('user/User', req.payload);
+    }
     else {
       console.log("No user defined ... default to public homepage");
       res.render('public', {message: "No user defined ... default to public homepage"});
@@ -58,13 +62,22 @@ module.exports = {
 
         success: function (){
 
-          // Store user id in the user session
-          //req.session.User = user.id;
-          console.log('logged in successfully');
+          var payload = User.payload(user.id, 'Login Access (TBD)');
+          
+          if ( req.param('Debug') ) { payload['Debug'] = true; }
 
-          // All done- let the client know that everything worked.
-          return res.ok();
-        }
+          jwToken.issueToken(payload, function(err, result) {
+             if (err) { 
+                 console.log("Error: " + err)
+                 return res.json(400, { "Error" : err });
+             }
+             
+             console.log("Logged in user " + JSON.stringify(payload));
+
+	           payload['token'] = result;
+             return res.render('user/User', payload);
+          });
+	}
       });
     });
 
@@ -128,23 +141,23 @@ module.exports = {
               // Log user in
               req.session.User = newUser.id;
               
-              var payload = { id: newUser.id, access: 'New User' };
+              console.log("URL: " + sails.config.globals.url);
+              var payload = { id: newUser.id, access: 'New User', url: sails.config.globals.url };
               var token = null;
 
               jwToken.issueToken(payload, function(err, result) {
-                  if (err) { console.log("Error: " + err) }
+                  if (err) { 
+                      console.log("Error: " + err)
+                      return res.json(400, { "Error" : err });
+                  }
                   else { 
                       token = result;
                       console.log('Generated new user: ' + JSON.stringify(payload));
                       console.log("Token issued: " + token);
                       req.session.token = token;
-                      return res.json(200, { user: req.param('name'), token: token, _csrf: token });
+                      return res.render('user/User', payload);
                   }
               });
-    
-              console.log('fail');
-              // Send back the id of the new user
-              // return res.json(200, { user: req.param('name'), token: token, _csrf: token });
             });
           }
         });

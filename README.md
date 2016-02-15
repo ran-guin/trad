@@ -1,17 +1,15 @@
-# OVID 
+# TRAD - Custom Template for Rapid Application Development
 
-# Online Vaccine & Immunization Database
+git clone mywebapp
 
-This is a UI for community based tracking of Vaccine & Immunization Records
+cd mywebapp
 
-Migrating Existing Data into database:
-* upload Vaccine data
-**  insert into vaccine (name, code, description, effectiveMonths, minDoseInterval, recommendationLevel, targetGroup) select Vaccine_Name, Vaccine_Name, Vaccine_Description, 6,1, 'Recommended', 'Adults' from vaccine.Vaccine;
-* upload Disease data
-**  insert into disease select Disease_Name, concat('desc of ',Disease_Name), Disease_Link, '','','' from vaccine.Disease where Disease_ID < 30;
-* add clinic
-* add staff
-* add patients
+npm install
 
-* define foreign key constraints if using mysql (?)
+Other General updates required: 
 
+* define database connection cin config/local.js (set up to use mysql, but may use whatever you like)
+
+* edit name (search for 'custom') in views
+
+* define custom api / models (eg sails generate api organization)

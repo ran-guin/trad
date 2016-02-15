@@ -81,18 +81,4 @@ module.exports.routes = {
   *                                                                          *
   ***************************************************************************/
 
-  'GET /clinic/home/:id' : 'ClinicController.home',
-  'GET /clinic/load': 'ClinicController.load',
-  'GET /clinic/list': 'ClinicController.list',
-  'GET /clinic/edit': 'ClinicController.edit',
-  'GET /clinic/add' : 'ClinicController.new',
-  'POST /clinic/add' : 'ClinicController.add',
-
-  'GET /visit/home' : 'VisitController.home',
-  'GET /visit/home/:id' : 'VisitController.home',
-
-  'GET /staff/load':   'StaffController.load',
-  'GET /staff/list':   'StaffController.list',
-  'GET /staff/manage': 'StaffController.manage',
-
 };

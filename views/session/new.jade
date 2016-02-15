@@ -2,7 +2,6 @@ extends ./../emptyLayout
 block content
   container
     form.form-signin(action='/session/create', method='POST')
-      h2.form-signin-heading Please sign in...
       if session && session.flash && session.flash.err
         ul.alert.alert-danger
           each error in session.flash.err
@@ -17,4 +16,15 @@ block content
       button.btn.btn-lg.btn-primary.btn-block(type='submit') Sign In
       input.form-control(type='hidden' value="#{_csrf}")
       hr
-      b #{_csrf}
+      
+      if message
+        .alert.alert-danger 
+          i.fa.fa-warning 
+          b &nbsp; #{message}
+      if ! message
+        .alert.alert-danger no message
+      .jumbotron(style='padding:50px')
+        h1 Custom Web Application 
+        h2 ... Details
+        a.btn.btn-lg.btn-success(href='/signup') Sign up now!
+
